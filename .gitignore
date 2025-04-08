@@ -1,14 +1,4 @@
 
-.idea/workspace.xml
+.idea/
 
-.idea/inspectionProfiles/Project_Default.xml
-
-.idea/other.xml
-
-.idea/vcs.xml
-
-__pycache__/RegressionChildExample.cpython-38.pyc
-
-__pycache__/RegressionParent.cpython-38.pyc
-
-__pycache__/RegVarsExample.cpython-38.pyc
+__pycache__/
