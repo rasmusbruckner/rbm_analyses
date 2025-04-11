@@ -38,18 +38,32 @@ class AlAgent:
         self.C = np.nan  # term related to catch-trial helicopter cue
 
     # Futuretodo: Create sub-function as in sampling agent
-    def learn(self, delta_t, b_t, v_t, mu_H, high_val):
-        """This function implements the inference of the reduced Bayesian model
+    def learn(
+        self, delta_t: float, b_t: float, v_t: int, mu_H: int, high_val: int
+    ) -> None:
+        """This function implements the inference of the reduced Bayesian model.
 
-        :param delta_t: Current prediction error
-        :param b_t: Last prediction of participant
-        :param v_t: Helicopter visibility
-        :param mu_H: True helicopter location
-        :param high_val: High-value index
+        Parameters
+        ----------
+        delta_t : float
+            Current prediction error
+        b_t : float
+            Last prediction of participant
+        v_t : int
+            Helicopter visibility
+        mu_H :
+            True helicopter location
+        high_val :
+            High-value index
 
-        # Optionaltodo: add type hints
-        # use "mypy" typechecker
-        # use getters
+        Returns
+        -------
+        None
+            This function does not return any value.
+
+        futuretodo:
+        use "mypy" typechecker
+        use getters
         """
 
         if np.isnan(delta_t):

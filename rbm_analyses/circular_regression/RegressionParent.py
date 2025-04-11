@@ -21,12 +21,15 @@ class RegressionParent:
     circular regression analyses
     """
 
-    def __init__(self, reg_vars):
-        """This function defines the instance variables unique to each instance
+    def __init__(self, reg_vars: "RegVars"):
+        """This function defines the instance variables unique to each instance.
 
-            See project-specific RegVars in child class for documentation
+        See project-specific RegVars in child class for documentation.
 
-        :param reg_vars: Regression-variables-object instance
+        Parameters
+        ----------
+        reg_vars : RegVars
+            Regression-variables-object instance defined in your project.
         """
 
         # Extract free parameters
@@ -49,12 +52,22 @@ class RegressionParent:
         self.bnds = reg_vars.bnds
         self.which_update_regressors = reg_vars.which_update_regressors
 
-    def parallel_estimation(self, df, prior_columns):
-        """This function manages the parallel estimation of the regression models
+    def parallel_estimation(
+        self, df: pd.DataFrame, prior_columns: list
+    ) -> pd.DataFrame:
+        """This function manages the parallel estimation of the regression models.
 
-        :param df: Data frame containing the data
-        :param prior_columns: Selected parameters for regression
-        :return: results_df: Data frame containing regression results
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Data frame containing the data.
+        prior_columns : list
+            Selected parameters for regression.
+
+        Returns
+        -------
+        pd.DataFrame
+            Data frame containing regression results
         """
 
         # Inform user about progress
@@ -94,15 +107,24 @@ class RegressionParent:
         columns = list(compress(prior_columns, values))
         columns.append("llh")
         columns.append("group")
+        columns.append("subj_num")
+        columns.append("ID")
         results_df = pd.DataFrame(output, columns=columns)
 
         return results_df
 
-    def estimation(self, df_subj_input):
-        """This function estimates the coefficients of the mixture model
+    def estimation(self, df_subj_input: pd.DataFrame) -> list:
+        """This function estimates the coefficients of the mixture model.
 
-        :param df_subj_input: Data frame containing subject-specific subset of data
-        :return: results_list: List containing regression results
+        Parameters
+        ----------
+        df_subj_input : pd.DataFrame
+            Data frame containing subject-specific subset of data.
+
+        Returns
+        -------
+        list
+            A list with the regression results.
         """
 
         # Control random number generator for reproducible results
@@ -163,21 +185,33 @@ class RegressionParent:
         for i in range(len(min_x)):
             results_list.append(float(min_x[i]))
 
-        # Extract group for output
+        # Extract group and subj_num for output
         group = float(list(set(df_subj["group"]))[0])
+        subj_num = int(list(set(df_subj["subj_num"]))[0])
+        id = int(list(set(df_subj["ID"]))[0])
 
         # Add group and log-likelihood to output
         results_list.append(float(min_llh))
         results_list.append(group)
+        results_list.append(subj_num)
+        results_list.append(id)
 
         return results_list
 
-    def llh(self, coeffs, df):
-        """This function computes the likelihood of participant updates, given the specified parameters
+    def llh(self, coeffs: np.ndarray, df: pd.DataFrame) -> float:
+        """This function computes the likelihood of participant updates, given the specified parameters.
 
-        :param coeffs: Regression coefficients
-        :param df: Data frame containing subset of data
-        :return: llh_sum: Sum of negative log likelihood of mixture model
+        Parameters
+        ----------
+        coeffs : np.ndarray
+            Regression coefficients
+        df : pd.DataFrame
+            Data frame containing subset of data
+
+        Returns
+        -------
+        float
+            Summed negative log-likelihood
         """
 
         # Initialize small value that replaces zero probabilities for numerical stability

@@ -1,21 +1,35 @@
-import numpy as np
-from scipy.special import expit
+from typing import ItemsView
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
+from scipy.special import expit
 
 
-def residual_fun(abs_dist, motor_noise, lr_noise):
-    """ This function computes updating noise (residuals) as a combination of two noise components
+def residual_fun(
+    abs_dist: np.ndarray, motor_noise: float, lr_noise: float
+) -> np.ndarray:
+    """This function computes updating noise (residuals) as a combination of two noise components.
 
     The noise variable is returned in terms of von-Mises concentration,
     which is a measure of precision, where variance = 1/concentration.
 
-    :param abs_dist: Absolute distance (predicted update or prediction error)
-    :param motor_noise: Motor-noise parameter (imprecise motor control)
-    :param lr_noise: Learning-rate-noise parameter (more noise for larger updates)
-    :return: kappa: Updating noise expressed as von Mises concentration.
+    Parameters
+    ----------
+    abs_dist : np.ndarray
+        Absolute distance (predicted update or prediction error).
+    motor_noise : np.ndarray
+        Motor-noise parameter (imprecise motor control).
+    lr_noise: np.ndarray
+        Learning-rate-noise parameter (more noise for larger updates).
 
-    # futuretodo: add to unit tests
+    Returns
+    -------
+    np.ndarray
+        Updating noise expressed as von Mises concentration.
+
+    futuretodo: add to unit tests
     """
 
     # Compute updating noise expressed as variance
@@ -25,32 +39,52 @@ def residual_fun(abs_dist, motor_noise, lr_noise):
 
     # Convert std of update distribution to radians and kappa
     up_noise_radians = np.deg2rad(up_noise)
-    up_var_radians = up_noise_radians ** 2
+    up_var_radians = up_noise_radians**2
     kappa_up = 1 / up_var_radians
 
     return kappa_up
 
 
-def compute_persprob(intercept, slope, abs_pred_up):
-    """ This function computes the perseveration probability
+def compute_persprob(
+    intercept: float, slope: float, abs_pred_up: np.ndarray
+) -> np.ndarray:
+    """This function computes the perseveration probability.
 
-    :param intercept: Logistic function intercept
-    :param slope: Logistic function slope
-    :param abs_pred_up: Absolute predicted update
-    :return: Computed perseveration probability
+    Parameters
+    ----------
+    intercept : float
+        Logistic function intercept.
+    slope : float
+        Logistic function slope.
+    abs_pred_up : np.ndarray
+        Absolute predicted update or prediction error.
+
+    Returns
+    -------
+    np.ndarray
+        Computed perseveration probability.
     """
 
     # expit(x) = 1/(1+exp(-x)), i.e., (1/(1+exp(-slope*(abs_pred_up-int))))
     return expit(slope * (abs_pred_up - intercept))
 
 
-def get_sel_coeffs(items, fixed_coeffs, coeffs):
-    """ This function extracts the model coefficients
+def get_sel_coeffs(items: ItemsView[str, bool], fixed_coeffs: dict, coeffs) -> dict:
+    """This function extracts the model coefficients.
 
-    :param items: 
-    :param fixed_coeffs:
-    :param coeffs:
-    :return:
+    Parameters
+    ----------
+    items : ItemsView[str, bool]
+        Free parameters, specified based on which_vars dict
+    fixed_coeffs : dict
+        Dictionary of fixed coefficients.
+    coeffs : np.ndarray
+        Dictionary of free model coefficients.
+
+    Returns
+    -------
+    dict
+        Dictionary of selected model coefficients.
     """
 
     # Initialize coefficient dictionary and counters
@@ -68,13 +102,24 @@ def get_sel_coeffs(items, fixed_coeffs, coeffs):
     return sel_coeffs
 
 
-def parameter_summary(parameters, param_labels, grid_size):
-    """ This function creates a simple plot showing parameter values
+def parameter_summary(
+    parameters: pd.DataFrame, param_labels: list, grid_size: tuple
+) -> None:
+    """This function creates a simple plot showing parameter values.
 
-    :param parameters: All parameters
-    :param param_labels: Labels for the plot
-    :param grid_size: Grid size for subplots (rows, cols)
-    :return: None
+    Parameters
+    ----------
+    parameters : pd.DataFrame
+        All parameters.
+    param_labels : list
+        Labels for the plot.
+    grid_size : tuple
+        Grid size for subplots (rows, cols)
+
+    Returns
+    -------
+    None
+        This function does not return any value
     """
 
     # Create figure
@@ -88,10 +133,18 @@ def parameter_summary(parameters, param_labels, grid_size):
         plt.title(f"{label}")
 
         ax = plt.gca()
-        sns.boxplot(y=label, data=parameters,
-                    notch=False, showfliers=False, linewidth=0.8, width=0.15,
-                    boxprops=dict(alpha=1), ax=ax, showcaps=False)
-        sns.swarmplot(y=label, data=parameters, color='gray', alpha=0.7, size=3, ax=ax)
+        sns.boxplot(
+            y=label,
+            data=parameters,
+            notch=False,
+            showfliers=False,
+            linewidth=0.8,
+            width=0.15,
+            boxprops=dict(alpha=1),
+            ax=ax,
+            showcaps=False,
+        )
+        sns.swarmplot(y=label, data=parameters, color="gray", alpha=0.7, size=3, ax=ax)
 
         # Add y-label
         plt.ylabel(param_labels[i])
