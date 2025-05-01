@@ -8,12 +8,15 @@ from rbm_analyses import RegressionParent, get_sel_coeffs, residual_fun
 class RegressionChildExample(RegressionParent):
     """This class specifies the instance variables and methods of the example of the regression analysis."""
 
-    def __init__(self, reg_vars):
-        """This function defines the instance variables unique to each instance
+    def __init__(self, reg_vars: "RegVars"):
+        """This function defines the instance variables unique to each instance.
 
         See RegVarsExample for documentation.
 
-        :param reg_vars: Regression-variables-object instance
+        Parameters
+        ----------
+        reg_vars : RegVars
+            Regression-variables-object instance.
         """
 
         # Parameters from parent class
@@ -58,11 +61,18 @@ class RegressionChildExample(RegressionParent):
         self.fixed_coeffs_reg = reg_vars.fixed_coeffs_reg
 
     @staticmethod
-    def get_datamat(df):
-        """This function creates the explanatory matrix
+    def get_datamat(df: pd.DataFrame) -> pd.DataFrame:
+        """This function creates the explanatory matrix.
 
-        :param df: Data frame containing subset of data
-        :return: reg_df: Regression data frame
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Data frame containing subset of data.
+
+         Returns
+        -------
+        pd.DataFrame
+            Regression data frame.
         """
 
         # Create custom data matrix for project
@@ -76,10 +86,13 @@ class RegressionChildExample(RegressionParent):
 
         return reg_df
 
-    def get_starting_point(self):
-        """This function determines the starting points of the estimation process
+    def get_starting_point(self) -> list:
+        """This function determines the starting points of the estimation process.
 
-        :return: x0: List with starting points
+        Returns
+        -------
+        list
+            List with starting points.
         """
 
         # Put all starting points into list
@@ -124,8 +137,7 @@ class RegressionChildExample(RegressionParent):
         Returns
         -------
         pd.DataFrame
-            Sampled regression updates
-
+            Sampled regression updates.
         """
 
         # Number of simulations
