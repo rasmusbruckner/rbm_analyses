@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 class RegressionParent:
     """This parent class specifies the instance variables and methods of the common methods of
-    circular regression analyses
+    circular regression analyses.
     """
 
     def __init__(self, reg_vars: "RegVars"):
@@ -67,7 +67,7 @@ class RegressionParent:
         Returns
         -------
         pd.DataFrame
-            Data frame containing regression results
+            Data frame containing regression results.
         """
 
         # Inform user about progress
@@ -204,14 +204,14 @@ class RegressionParent:
         Parameters
         ----------
         coeffs : np.ndarray
-            Regression coefficients
+            Regression coefficients.
         df : pd.DataFrame
-            Data frame containing subset of data
+            Data frame containing subset of data.
 
         Returns
         -------
         float
-            Summed negative log-likelihood
+            Summed negative log-likelihood.
         """
 
         # Initialize small value that replaces zero probabilities for numerical stability
@@ -293,6 +293,7 @@ class RegressionParent:
             self.which_vars["lambda_0"] and self.which_vars["lambda_1"]
         ):
 
+            # Logistic function combining both parameters
             lambda_t = compute_persprob(
                 sel_coeffs["lambda_0"], sel_coeffs["lambda_1"], abs(a_t_hat)
             )

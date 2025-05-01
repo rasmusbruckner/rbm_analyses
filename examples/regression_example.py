@@ -38,23 +38,6 @@ if __name__ == "__main__":
     motor_noise = 10  # motor noise
     fixed_LR = 0.3  # fixed learning rate
 
-    # Simulate prediction errors
-    delta_t = np.random.vonmises(0, 5, n_subj * n_trials)
-
-    # Simulate updates corrupted by motor noise
-    a_t = np.random.vonmises(fixed_LR * delta_t, motor_noise)
-
-    # Create data frame for regression
-    df_example = pd.DataFrame()
-    df_example["delta_t"] = delta_t
-    df_example["a_t"] = a_t
-    df_example["group"] = 0
-    df_example["subj_num"] = np.repeat(np.arange(n_subj), n_trials) + 1
-
-    # --------------------------
-    # 2. Run regression analysis
-    # --------------------------
-
     # Define regression variables
     # ---------------------------
 
@@ -84,13 +67,24 @@ if __name__ == "__main__":
         reg_vars.lambda_1,
     ]
 
+    # Sample random model parameters that we try to recover
+    df_params = pd.DataFrame()
+    df_params["beta_0"] = np.zeros(n_subj)
+    df_params["beta_1"] = np.repeat(fixed_LR, n_subj)
+    df_params["omikron_0"] = np.repeat(motor_noise, n_subj)
+    df_params["subj_num"] = np.arange(1, n_subj + 1)
+
     # Initialize regression object
     regression = RegressionChildExample(reg_vars)
 
-    # Run regression
-    # --------------
+    # Simulate updates based on sampled parameters
+    samples = regression.sample_data(df_params, n_trials)
 
-    results_df = regression.parallel_estimation(df_example, prior_columns)
+    # --------------------------
+    # 2. Run regression analysis
+    # --------------------------
+
+    results_df = regression.parallel_estimation(samples, prior_columns)
 
     # Plot results
     # ------------
