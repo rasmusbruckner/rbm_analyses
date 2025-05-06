@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from all_in import safe_div
 from rbm_analyses.utilities import circ_dist, weighted_circular_mean
-from scipy.stats import norm
+from scipy.stats import norm, vonmises
 
 
 class AlAgent:
@@ -86,9 +86,15 @@ class AlAgent:
         # Likelihood of prediction error given that change point occurred: (1/max_x)^s * h
         term_1 = ((1 / self.max_x) ** self.s) * self.h
 
-        # Likelihood of prediction error given that no changepoint occurred:
+        # Likelihood of prediction error given that no change point occurred:
         # (N(delta_t; 0,sigma^2_t + sigma^2))^s * (1-h)
-        term_2 = (norm.pdf(delta_t, 0, np.sqrt(self.tot_var)) ** self.s) * (1 - self.h)
+        if self.circular:
+            kappa = 1 / self.tot_var
+            term_2 = (vonmises.pdf(delta_t, kappa) ** self.s) * (1 - self.h)
+        else:
+            term_2 = (norm.pdf(delta_t, 0, np.sqrt(self.tot_var)) ** self.s) * (
+                1 - self.h
+            )
 
         # Compute change-point probability
         self.omega_t = safe_div(term_1, (term_2 + term_1))

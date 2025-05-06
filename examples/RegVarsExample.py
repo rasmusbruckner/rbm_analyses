@@ -116,6 +116,7 @@ class RegVars:
         # Other attributes
         self.n_subj = np.nan  # number of subjects
         self.n_ker = 4  # number of kernels for estimation
+        self.seed = 123  # seed for random number generator
         self.show_ind_prog = True  # Update progress bar for each subject (True, False)
         self.rand_sp = True  # 0 = fixed starting points, 1 = random starting points
         self.n_sp = 5  # number of starting points (if rand_sp = 1)

@@ -246,3 +246,29 @@ def compute_bic(llh: float, n_params: int, n_trials: int) -> float:
     """
 
     return (-1 * llh) - (n_params / 2) * np.log(n_trials)
+
+
+def normalize_angle(angle_rad: np.ndarray) -> np.ndarray:
+    """ This function normalizes circular angles (in radians).
+
+    Parameters
+    ----------
+    angle_rad : np.ndarray
+        Raw values in radians.
+
+    Returns
+    -------
+    np.ndarray
+        Normalized values in radians.
+    """
+
+    # Translate to degrees
+    angle_deg = np.rad2deg(angle_rad)
+
+    # Ensure the angle is within the range -180 to 180 degrees
+    # futuretodo: do everything in radians
+    corr_angle = (angle_deg + 180) % 360 - 180
+
+    # print('corrected angle deg is:', corr_angle)
+
+    return np.deg2rad(corr_angle)

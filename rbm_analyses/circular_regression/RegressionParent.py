@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from all_in import callback
 from rbm_analyses.utilities import (compute_persprob, get_sel_coeffs,
-                                    residual_fun)
+                                    normalize_angle, residual_fun)
 from scipy.optimize import minimize
 from scipy.special import logsumexp
 from scipy.stats import norm, vonmises
@@ -45,6 +45,7 @@ class RegressionParent:
         # Extract other attributes
         self.n_subj = reg_vars.n_subj
         self.n_ker = reg_vars.n_ker
+        self.seed = reg_vars.seed
         self.show_ind_prog = reg_vars.show_ind_prog
         self.rand_sp = reg_vars.rand_sp
         self.use_prior = reg_vars.use_prior
@@ -128,7 +129,7 @@ class RegressionParent:
         """
 
         # Control random number generator for reproducible results
-        np.random.seed(123)
+        np.random.seed(self.seed)
 
         # Get data matrix that is required for the model from child class
         df_subj = self.get_datamat(df_subj_input)
@@ -164,7 +165,7 @@ class RegressionParent:
                 x0,
                 args=(df_subj,),
                 method="L-BFGS-B",
-                options={"disp": False},
+                options={"disp": False, "maxiter": 500},
                 bounds=bnds,
             )
 
@@ -186,9 +187,9 @@ class RegressionParent:
             results_list.append(float(min_x[i]))
 
         # Extract group and subj_num for output
-        group = float(list(set(df_subj["group"]))[0])
-        subj_num = int(list(set(df_subj["subj_num"]))[0])
-        id = int(list(set(df_subj["ID"]))[0])
+        group = int(pd.unique(df_subj["group"])[0])
+        subj_num = int(pd.unique(df_subj["subj_num"])[0])
+        id = pd.unique(df_subj["ID"])[0]
 
         # Add group and log-likelihood to output
         results_list.append(float(min_llh))
@@ -237,6 +238,9 @@ class RegressionParent:
 
         # Compute predicted update
         a_t_hat = lr_mat @ np.array(update_regressors)  # matrix multiplication
+
+        # Ensure value is in range [-pi, pi]
+        a_t_hat = normalize_angle(a_t_hat)
 
         # Residuals
         if self.which_vars["omikron_1"]:
